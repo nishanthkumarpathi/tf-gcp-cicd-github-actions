@@ -2,3 +2,10 @@
 provider "google" {
   project = "student100"
 }
+
+terraform {
+  backend "gcs" {
+    bucket = "cicdstatebackup"
+    prefix = "qa"
+  }
+}
