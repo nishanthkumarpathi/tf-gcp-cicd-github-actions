@@ -20,6 +20,7 @@ jobs:
 
       - name: Check Terraform Configuration files formatting
         run: |
+          cd dev
           terraform fmt -check=true
           if [ $? -ne 0 ]; then
             echo "ERROR: Terraform configuration files are not formatted correctly"
