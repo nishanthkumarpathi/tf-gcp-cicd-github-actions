@@ -79,16 +79,22 @@ jobs:
         run: |
           cd dev
           terraform init
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_DEFAULT_CREDENTIALS }}
 
       - name: Terraform Validate
         run: |
           cd dev
           terraform validate
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_DEFAULT_CREDENTIALS }}
 
       - name: Terraform Plan
         run: |
           cd dev
           terraform plan -out=plan.out
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_DEFAULT_CREDENTIALS }}
 
       - name: Upload the Artifact
         uses: actions/upload-artifact@v2
@@ -98,9 +104,10 @@ jobs:
 
       - name: Terraform Auto Apply
         run: |
-          echo "switch directory"
           cd dev
           terraform apply -auto-approve
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_DEFAULT_CREDENTIALS }}
 
       
 
