@@ -31,6 +31,7 @@ jobs:
           fi
           echo "SUCCESS: Terraform configuration files are formatted correctly"
           exit 0
+        continue-on-error: true
 
       - name: Next Step After Verification
         run: echo "Successfull Steps"
@@ -60,17 +61,45 @@ jobs:
       with:
         sarif_file: terrascan.sarif
 
-
   devdeployment:
     name: Deploy to Dev Environment
     needs: [checkformatting, terrascan_job]
     runs-on: ubuntu-latest
-    steps:
-      - run: echo "devdeployment"
 
-  qadeployment:
-    name: Deploy to qa Environment
-    needs: [devdeployment]
-    runs-on: ubuntu-latest
     steps:
-      - run: echo "qadeployment"
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.2.7
+
+      - name: Checkout the Code
+        uses: actions/checkout@v2
+
+      - name: Terraform Init
+        run: |
+          cd dev
+          terraform init
+
+      - name: Terraform Validate
+        run: |
+          cd dev
+          terraform validate
+
+      - name: Terraform Plan
+        run: |
+          cd dev
+          terraform plan -out=plan.out
+
+      - name: Upload the Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: plan
+          path: dev/plan.out
+
+      - name: Terraform Auto Apply
+        run: |
+          cd dev
+          terraform apply -auto-approve
+
+      
+
