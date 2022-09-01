@@ -1,0 +1,29 @@
+name: "Terraform Workflow"
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  checkformatting:
+    name: Check the Terraform Formatting
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.2.7
+
+      - name: Check Terraform Configuration files formatting
+        run: |
+          terraform fmt -check=true
+          if [ $? -ne 0 ]; then
+            echo "ERROR: Terraform configuration files are not formatted correctly"
+            exit 1
+          fi
+          echo "SUCCESS: Terraform configuration files are formatted correctly"
+          exit 0
