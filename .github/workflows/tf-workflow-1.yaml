@@ -63,10 +63,10 @@ jobs:
 
   driftctl:
     runs-on: ubuntu-latest
-    env:
-      GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_DEFAULT_CREDENTIALS }}
-      GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-      CLOUDSDK_CORE_PROJECT: "student100"
+    # env:
+    #   GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_DEFAULT_CREDENTIALS }}
+    #   GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+    #   CLOUDSDK_CORE_PROJECT: "student100"
     steps:
 
       - id: 'auth'
@@ -81,7 +81,14 @@ jobs:
           DCTL_TO: gcp+tf
           DCTL_FROM: tfstate+gs://cicdstatebackup/dev/default.tfstate
           DCTL_ONLY_MANAGED: true
+          DCTL_OUTPUT: json://driftctloutput.json
         continue-on-error: true
+
+      - name: Upload driftctl output
+        uses: actions/upload-artifact@v2
+        with:
+          name: driftctloutput
+          path: driftctloutput.json
 
   plan:
     needs: [checkformatting, driftctl, terrascan_job]
