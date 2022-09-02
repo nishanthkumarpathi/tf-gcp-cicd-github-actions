@@ -73,6 +73,7 @@ jobs:
         env:
           DCTL_TO: gcp+tf
           DCTL_FROM: tfstate+gs://cicdstatebackup/dev/default.tfstate
+          DCTL_ONLY_MANAGED: true
 
   plan:
     needs: [checkformatting, driftctl, terrascan_job]
