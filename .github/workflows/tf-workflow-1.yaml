@@ -68,6 +68,7 @@ jobs:
         uses: snyk/driftctl-action@v1
         env:
           DCTL_FROM: tfstate+gs://cicdstatebackup/dev/default.tfstate
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_DEFAULT_CREDENTIALS }}
 
   plan:
     needs: [checkformatting, driftctl, terrascan_job]
@@ -84,7 +85,7 @@ jobs:
 
   devdeployment:
     name: Deploy to Dev Environment
-    needs: [checkformatting, terrascan_job]
+    needs: [plan]
     runs-on: ubuntu-latest
 
     steps:
