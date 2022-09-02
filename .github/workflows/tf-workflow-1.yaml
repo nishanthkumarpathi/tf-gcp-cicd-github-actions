@@ -72,7 +72,7 @@ jobs:
         uses: snyk/driftctl-action@v1.2.0
         env:
           DCTL_TO: gcp+tf
-          DCTL_FROM: tfstate+google://cicdstatebackup/dev/default.tfstate
+          DCTL_FROM: tfstate+gs://cicdstatebackup/dev/default.tfstate
 
   plan:
     needs: [checkformatting, driftctl, terrascan_job]
