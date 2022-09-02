@@ -74,6 +74,7 @@ jobs:
           DCTL_TO: gcp+tf
           DCTL_FROM: tfstate+gs://cicdstatebackup/dev/default.tfstate
           DCTL_ONLY_MANAGED: true
+        continue-on-error: true
 
   plan:
     needs: [checkformatting, driftctl, terrascan_job]
