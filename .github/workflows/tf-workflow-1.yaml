@@ -63,12 +63,14 @@ jobs:
 
   driftctl:
     runs-on: ubuntu-latest
+    env:
+      GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_DEFAULT_CREDENTIALS }}
     steps:
       - name: Run driftctl
-        uses: snyk/driftctl-action@v1
+        uses: snyk/driftctl-action@v1.2.0
         env:
+          DCTL_TO: gcp+tf
           DCTL_FROM: tfstate+gs://cicdstatebackup/dev/default.tfstate
-          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_DEFAULT_CREDENTIALS }}
 
   plan:
     needs: [checkformatting, driftctl, terrascan_job]
@@ -87,6 +89,8 @@ jobs:
     name: Deploy to Dev Environment
     needs: [plan]
     runs-on: ubuntu-latest
+    env:
+      GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_DEFAULT_CREDENTIALS }}
 
     steps:
       - name: Install Terraform
@@ -101,35 +105,30 @@ jobs:
         run: |
           cd dev
           terraform init
-        env:
-          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_DEFAULT_CREDENTIALS }}
 
       - name: Terraform Validate
         run: |
           cd dev
           terraform validate
-        env:
-          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_DEFAULT_CREDENTIALS }}
 
       - name: Terraform Plan
         run: |
           cd dev
-          terraform plan -out=plan.out
-        env:
-          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_DEFAULT_CREDENTIALS }}
+          terraform plan -no-color > tfplan.txt
+          terraform plan -out=tfplan
 
       - name: Upload the Artifact
         uses: actions/upload-artifact@v2
         with:
           name: plan
-          path: dev/plan.out
+          path: |
+            dev/tfplan.txt
+            dev/tfplan
 
       - name: Terraform Auto Apply
         run: |
           cd dev
           terraform apply -auto-approve
-        env:
-          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_DEFAULT_CREDENTIALS }}
 
       
 
